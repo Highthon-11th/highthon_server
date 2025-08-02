@@ -7,7 +7,12 @@ data class UserResponse(
     val email: String,
     val name: String,
     val role: String,
-    val createdDate: Instant,
-    val updatedDate: Instant?
 
+    val profileImageUrl: String?,
+
+    val createdDate: Instant,
+    val updatedDate: Instant?,
+
+    val introduce: String,
+    val description: String,
 )

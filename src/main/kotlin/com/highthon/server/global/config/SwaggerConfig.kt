@@ -37,7 +37,8 @@ class SwaggerConfig(
             .addSecurityItem(SecurityRequirement().addList(SECURITY_SCHEME_NAME))
             .servers(
                 listOf(
-                    local
+                    local,
+                    Server().url("https://api-test.doyun.dev"),
                 )
             )
             .info(configurationInfo())

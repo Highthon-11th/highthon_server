@@ -14,6 +14,7 @@ class CorsConfig {
             "http://localhost:5173",
             "http://localhost:4173",
             "https://fit-boarding.doyun.dev",
+            "https://api-test.doyun.dev"
         )
     }
 

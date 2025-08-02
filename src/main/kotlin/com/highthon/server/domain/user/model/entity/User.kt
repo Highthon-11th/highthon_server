@@ -30,6 +30,13 @@ class User(
 
     val providerId: String?,
 
+    val profileImageUrl: String? = null,
+
+    val introduce: String,
+
+    val description: String,
+
+
 
     @Enumerated(EnumType.STRING)
     val role: UserRole,

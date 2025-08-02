@@ -27,7 +27,9 @@ class UserMapper(
                 password = passwordEncoder.encode(password),
                 provider = null,
                 providerId = null,
-                role = role
+                role = role,
+                introduce = "",
+                description = "",
             )
         }
 
@@ -58,7 +60,9 @@ class UserMapper(
             provider = provider,
             providerId = sub,
             password = null,
-            role = role
+            role = role,
+            introduce = "",
+            description = "",
         )
 
         return user
@@ -74,7 +78,11 @@ class UserMapper(
             name = user.name,
             role = user.role.name,
             createdDate = user.createdDate,
-            updatedDate = user.updatedDate
+            updatedDate = user.updatedDate,
+
+            introduce = user.introduce,
+            description = user.description,
+            profileImageUrl = user.profileImageUrl
         )
     }
 }

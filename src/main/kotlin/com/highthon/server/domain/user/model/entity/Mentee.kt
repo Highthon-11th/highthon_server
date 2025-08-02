@@ -9,16 +9,22 @@ import jakarta.persistence.*
 class Mentee(
     name: String,
     email: String,
-    password: String,
+    password: String?,
     provider: OAuthProvider,
-    providerId: String?
+    providerId: String?,
+    introduce: String,
+    description: String,
+    profileImageUrl: String? = null,
 ) : User(
     name = name,
     email = email,
     password = password,
     role = UserRole.MENTEE,
     provider = provider,
-    providerId = providerId
+    providerId = providerId,
+    introduce = introduce,
+    description = description,
+    profileImageUrl = profileImageUrl,
 ) {
     @OneToMany(mappedBy = "mentee", cascade = [CascadeType.ALL], orphanRemoval = true)
     val mentorList: MutableList<Mentoring> = mutableListOf()

@@ -7,6 +7,7 @@ import com.highthon.server.domain.user.model.dto.request.request.CreateEmailUser
 import com.highthon.server.global.jwt.model.dto.response.TokenResponse
 import com.highthon.server.domain.user.model.dto.request.request.EmailLoginRequest
 import com.highthon.server.domain.user.model.dto.request.request.OAuthLoginRequest
+import com.highthon.server.domain.user.model.entity.Mentee
 import com.highthon.server.domain.user.model.entity.User
 import com.highthon.server.domain.user.model.repository.UserRepository
 import com.highthon.server.global.jwt.exception.InvalidTokenException
@@ -14,6 +15,7 @@ import com.highthon.server.global.jwt.provider.AccessTokenProvider
 import com.highthon.server.global.jwt.provider.RefreshTokenProvider
 import com.highthon.server.global.oauth.model.constant.OAuthProvider
 import com.highthon.server.global.oauth.provider.IdTokenProvider
+import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -27,6 +29,8 @@ class UserAuthService(
     private val passwordEncoder: PasswordEncoder,
 
     ) {
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
     fun loginEmailUser(emailLoginRequest: EmailLoginRequest): TokenResponse {
         val user = userRepository.findByEmail(emailLoginRequest.email) ?: throw UserNotFoundException()
@@ -46,11 +50,30 @@ class UserAuthService(
 
 
     fun loginOAuthUser(provider: OAuthProvider, oAuthLoginRequest: OAuthLoginRequest): TokenResponse {
+
+        logger.error("OAuth login request: ${oAuthLoginRequest.idToken}")
+
         val payload = idTokenProvider.verifyToken(provider, oAuthLoginRequest.idToken) ?: throw InvalidTokenException()
 
         val providerId = payload["sub"].toString()
 
-        val user = userRepository.findByProviderAndProviderId(provider, providerId) ?: throw UserNotFoundException()
+        logger.error("OAuth login request: ${payload.toString()}")
+
+        val user = userRepository.findByProviderAndProviderId(provider, providerId) ?: Mentee(
+            email = payload["email"]?.toString() ?: "",
+            name = payload["nickname"]?.toString() ?: "",
+            provider = provider,
+            providerId = providerId,
+            password = null,
+            introduce = "",
+            description = "",
+            profileImageUrl = payload["picture"]?.toString(),
+
+
+            ).let {
+            userRepository.save(it)
+        }
+
 
         val accessToken = accessTokenProvider.createToken(user.id)
         val refreshToken = refreshTokenProvider.createToken(user.id)
@@ -98,8 +121,11 @@ class UserAuthService(
             name = request.name,
             provider = OAuthProvider.EMAIL,
             providerId = request.email, // Using email as providerId for email users
-            role = UserRole.MENTEE
-        ).let {
+            role = UserRole.MENTEE,
+            introduce = "",
+            description = "",
+
+            ).let {
             userRepository.save(it)
         }
 
