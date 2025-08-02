@@ -47,3 +47,9 @@ jwt:
   access-token-expiration-hours: ${JWT_ACCESS_TOKEN_EXPIRATION_HOURS}
   refresh-token-secret-key: ${JWT_REFRESH_TOKEN_SECRET_KEY}
   refresh-token-expiration-hours: ${JWT_REFRESH_TOKEN_EXPIRATION_HOURS}
+
+kakao:
+  native-app-key: ${KAKAO_NATIVE_APP_KEY}
+  rest-api-key: ${KAKAO_REST_API_KEY}
+  javascript-key: ${KAKAO_JAVASCRIPT_KEY}
+  admin-key: ${KAKAO_ADMIN_KEY}
