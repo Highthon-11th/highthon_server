@@ -1,6 +1,49 @@
+server:
+  port: ${PORT}
+
 spring:
   config:
     import: optional:file:.env[.properties]
 
   application:
     name: highthon_server
+
+  web:
+    resources:
+      add-mappings: false
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+  cloud:
+    aws:
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      s3:
+        region: ${AWS_S3_REGION}
+        bucket: ${AWS_S3_BUCKET}
+  servlet:
+    multipart:
+      max-file-size: 10MB
+
+  threads:
+    virtual:
+      enabled: true
+jwt:
+  access-token-secret-key: ${JWT_ACCESS_TOKEN_SECRET_KEY}
+  access-token-expiration-hours: ${JWT_ACCESS_TOKEN_EXPIRATION_HOURS}
+  refresh-token-secret-key: ${JWT_REFRESH_TOKEN_SECRET_KEY}
+  refresh-token-expiration-hours: ${JWT_REFRESH_TOKEN_EXPIRATION_HOURS}
