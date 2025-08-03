@@ -7,9 +7,12 @@ import com.highthon.server.domain.user.model.dto.request.request.CreateEmailUser
 import com.highthon.server.global.jwt.model.dto.response.TokenResponse
 import com.highthon.server.domain.user.model.dto.request.request.EmailLoginRequest
 import com.highthon.server.domain.user.model.dto.request.request.OAuthLoginRequest
+import com.highthon.server.domain.user.model.dto.response.UserResponse
 import com.highthon.server.domain.user.model.entity.Mentee
 import com.highthon.server.domain.user.model.entity.User
+import com.highthon.server.domain.user.model.mapper.UserMapper
 import com.highthon.server.domain.user.model.repository.UserRepository
+import com.highthon.server.global.auth.CustomUserDetails
 import com.highthon.server.global.jwt.exception.InvalidTokenException
 import com.highthon.server.global.jwt.provider.AccessTokenProvider
 import com.highthon.server.global.jwt.provider.RefreshTokenProvider
@@ -27,6 +30,7 @@ class UserAuthService(
     private val accessTokenProvider: AccessTokenProvider,
     private val refreshTokenProvider: RefreshTokenProvider,
     private val passwordEncoder: PasswordEncoder,
+    private val userMapper: UserMapper,
 
     ) {
 
@@ -51,13 +55,10 @@ class UserAuthService(
 
     fun loginOAuthUser(provider: OAuthProvider, oAuthLoginRequest: OAuthLoginRequest): TokenResponse {
 
-        logger.error("OAuth login request: ${oAuthLoginRequest.idToken}")
 
         val payload = idTokenProvider.verifyToken(provider, oAuthLoginRequest.idToken) ?: throw InvalidTokenException()
 
         val providerId = payload["sub"].toString()
-
-        logger.error("OAuth login request: ${payload.toString()}")
 
         val user = userRepository.findByProviderAndProviderId(provider, providerId) ?: Mentee(
             email = payload["email"]?.toString() ?: "",
@@ -136,5 +137,11 @@ class UserAuthService(
             accessToken = accessToken,
             refreshToken = refreshToken,
         )
+    }
+
+    fun getMe(userDetails: CustomUserDetails): UserResponse {
+        val user = userRepository.findByIdOrNull(userDetails.userId)!!;
+
+        return userMapper.toResponse(user)
     }
 }

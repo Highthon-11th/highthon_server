@@ -1,6 +1,7 @@
 package com.highthon.server.domain.post.model.repository
 
 import com.highthon.server.domain.post.model.entity.Post
+import com.highthon.server.domain.user.model.entity.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -12,5 +13,7 @@ interface PostRepository: JpaRepository<Post, UUID> {
     // For tag IDs
     @Query("SELECT DISTINCT p FROM Post p JOIN p.tagList pt WHERE pt.tag.id IN :tagIds")
     fun findByTagIds(@Param("tagIds") tagIds: List<Long>): List<Post>
+
+    fun findByAuthor(author: User): List<Post>
 
 }

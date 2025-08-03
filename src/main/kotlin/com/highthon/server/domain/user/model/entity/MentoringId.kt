@@ -6,6 +6,6 @@ import jakarta.persistence.Embeddable
 
 @Embeddable
 data class MentoringId(
-    val mentorId: UUID = UUID.randomUUID(),
-    val menteeId: UUID = UUID.randomUUID()
+    val mentorId: UUID?=null ,
+    val menteeId: UUID? = null
 ) : Serializable

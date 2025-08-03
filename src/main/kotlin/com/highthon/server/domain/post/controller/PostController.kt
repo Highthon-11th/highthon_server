@@ -57,4 +57,14 @@ class PostController(
 
         return postList
     }
+
+    @GetMapping("${PREFIX}/my")
+    fun getMyPosts(
+        @AuthenticationPrincipal userDetails: CustomUserDetails,
+    ): List<PostResponse> {
+
+        val postList = postService.getMyPosts(userDetails)
+
+        return postList
+    }
 }

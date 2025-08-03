@@ -1,66 +1,47 @@
 package com.highthon.server.domain.user.controller
 
+import com.highthon.server.domain.user.exception.UserNotFoundException
 import com.highthon.server.domain.user.model.dto.request.request.CreateEmailUserRequest
 import com.highthon.server.global.jwt.model.dto.response.TokenResponse
 import com.highthon.server.domain.user.model.dto.request.request.EmailLoginRequest
 import com.highthon.server.domain.user.model.dto.request.request.OAuthLoginRequest
 import com.highthon.server.domain.user.model.dto.response.UserResponse
+import com.highthon.server.domain.user.model.mapper.UserMapper
+import com.highthon.server.domain.user.model.repository.UserRepository
 import com.highthon.server.domain.user.service.UserAuthService
 import com.highthon.server.global.auth.CustomUserDetails
 import com.highthon.server.global.oauth.model.constant.OAuthProvider
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.data.repository.query.Param
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
-@Tag(name = "User Auth")
+@Tag(name = "User")
 @RestController
-class UserAuthController(
+class UserController(
     private val userAuthService: UserAuthService,
+    private val userRepository: UserRepository,
+    private val userMapper: UserMapper,
 ) {
     companion object {
-        private const val PREFIX = "/auth"
+        private const val PREFIX = "/user"
     }
 
-    @PostMapping("$PREFIX/register/email")
-    fun registerEmailUser(
-        @RequestBody @Valid request: CreateEmailUserRequest
-    ): TokenResponse {
-        return userAuthService.createEmailUser(request)
-    }
-
-    @PostMapping("$PREFIX/login/email")
-    fun loginEmailUser(
-        @RequestBody @Valid request: EmailLoginRequest
-    ): TokenResponse {
-        return userAuthService.loginEmailUser(request)
-    }
-
-    @PostMapping("$PREFIX/login/oauth")
-    fun loginOAuthUser(
-        @Param("provider") provider: OAuthProvider,
-        @RequestBody @Valid request: OAuthLoginRequest
-    ): TokenResponse {
-        return userAuthService.loginOAuthUser(provider, request)
-    }
-
-    @PostMapping("$PREFIX/refresh")
-    fun refreshAccessToken(
-        @CookieValue("refreshToken") refreshToken: String
-    ): TokenResponse {
-        return userAuthService.refresh(refreshToken)
-    }
-
-    @GetMapping("$PREFIX/me")
-    fun getMe(
-        @AuthenticationPrincipal userDetails: CustomUserDetails,
+    @GetMapping("$PREFIX/{id}")
+    fun getUser(@PathVariable id: UUID,
     ): UserResponse {
-        return userAuthService.getMe(userDetails)
+       val user = userRepository.findByIdOrNull(id) ?: throw UserNotFoundException()
+
+        return userMapper.toResponse(user)
     }
 }

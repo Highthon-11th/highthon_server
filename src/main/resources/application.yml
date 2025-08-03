@@ -53,3 +53,7 @@ kakao:
   rest-api-key: ${KAKAO_REST_API_KEY}
   javascript-key: ${KAKAO_JAVASCRIPT_KEY}
   admin-key: ${KAKAO_ADMIN_KEY}
+
+firebase:
+  config:
+    path: ${FIREBASE_SDK_PATH}

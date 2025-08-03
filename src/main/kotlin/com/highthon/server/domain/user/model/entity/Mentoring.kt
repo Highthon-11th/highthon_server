@@ -1,13 +1,13 @@
 package com.highthon.server.domain.user.model.entity
 
 import jakarta.persistence.*
-import java.time.Instant
+import java.util.UUID
 
 @Entity
 class Mentoring(
 
     @EmbeddedId
-    val id: MentoringId,
+    val id: MentoringId = MentoringId(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("mentorId")
@@ -19,7 +19,8 @@ class Mentoring(
     @JoinColumn(name = "mentee_id")
     val mentee: Mentee,
 
-    val startedAt: Instant = Instant.now()
+    @Column(nullable = false, unique = true)
+    val chatRoomId: UUID,
 ) {
     init {
         mentor.menteeList.add(this)
