@@ -1,6 +1,8 @@
 package com.highthon.server.domain.post.controller
 
+import com.highthon.server.domain.post.model.dto.request.AddCommentRequest
 import com.highthon.server.domain.post.model.dto.request.CreatePostRequest
+import com.highthon.server.domain.post.model.dto.response.CommentResponse
 import com.highthon.server.domain.post.model.dto.response.PostResponse
 import com.highthon.server.domain.post.model.entity.Post
 import com.highthon.server.domain.post.model.mapper.PostMapper
@@ -13,6 +15,7 @@ import org.springframework.http.MediaType
 import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
@@ -66,5 +69,25 @@ class PostController(
         val postList = postService.getMyPosts(userDetails)
 
         return postList
+    }
+
+    @PostMapping("${PREFIX}/comment")
+    fun createComment(
+        @AuthenticationPrincipal userDetails: CustomUserDetails,
+        @RequestBody request: AddCommentRequest,
+    ): CommentResponse {
+        val comment = postService.createComment(
+            userDetails,
+            request
+        )
+
+        return comment
+    }
+
+    @GetMapping("${PREFIX}/{postId}/comments")
+    fun getCommentsByPostId(
+        @PathVariable postId: UUID
+    ): List<CommentResponse> {
+        return postService.getCommentsByPostId(postId)
     }
 }
